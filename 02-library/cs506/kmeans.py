@@ -11,8 +11,21 @@ def point_avg(points):
     
     Returns a new point which is the center of all the points.
     """
-    raise NotImplementedError()
-
+    if (len(points) == 0):
+        return []
+    
+    length = len(points) 
+    dimensions = len(points[0]) 
+    
+    center = [0.0] * dimensions
+    
+    for coord in points:
+        for i in range(dimensions):
+            center[i] += coord[i]
+    
+    center = [i / length for i in center] #mean
+    return center
+    
 
 def update_centers(dataset, assignments):
     """
@@ -21,7 +34,17 @@ def update_centers(dataset, assignments):
     Compute the center for each of the assigned groups.
     Return `k` centers in a list
     """
-    raise NotImplementedError()
+    centers = []  
+    k = max(assignments) + 1 
+    clusters = []
+    
+    for idx in range(k): # in k
+        clusters += [j for i, j in enumerate(dataset) if assignments[i] == idx]
+    
+    centers = [point_avg(cluster) for cluster in clusters]
+    
+    return centers
+    
 
 def assign_points(data_points, centers):
     """
@@ -38,22 +61,33 @@ def assign_points(data_points, centers):
         assignments.append(shortest_index)
     return assignments
 
+def euclidean_dist(x, y):
+    res = 0
+    for i in range(len(x)):
+        res += (x[i] - y[i])**2
+    return res**(1/2)
 
 def distance(a, b):
     """
     Returns the Euclidean distance between a and b
     """
-    raise NotImplementedError()
+    return euclidean_dist(a,b)
 
 def distance_squared(a, b):
-    raise NotImplementedError()
+    return euclidean_dist(a,b)**2
+
 
 def generate_k(dataset, k):
     """
     Given `data_set`, which is an array of arrays,
     return a random set of k points from the data_set
     """
-    raise NotImplementedError()
+    
+    total_num = list(range(len(dataset)))
+    
+    random.shuffle(total_num)
+    return [dataset[i] for i in total_num[:k]]
+
 
 def cost_function(clustering):
     raise NotImplementedError()
@@ -66,7 +100,10 @@ def generate_k_pp(dataset, k):
     where points are picked with a probability proportional
     to their distance as per kmeans pp
     """
-    raise NotImplementedError()
+    
+    centroids = [dataset[random.randint(0, len(dataset) - 1)]]
+
+    return centroids
 
 
 def _do_lloyds_algo(dataset, k_points):
